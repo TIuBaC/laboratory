@@ -1,163 +1,207 @@
+```java
 import java.util.*;
 
 public class BinaryTreesLab5 {
 
     static class Node {
-        int znach;
-        Node lev, prav;
-        Node(int v){znach=v;}
+        int data;
+        Node left, right;
+        Node(int value) { data = value; }
     }
 
-    static void preOrder(Node uzel){
-        if(uzel==null) return;
-        System.out.print(uzel.znach+" ");
-        preOrder(uzel.lev);
-        preOrder(uzel.prav);
+    static void preOrder(Node node) {
+        if (node == null) return;
+        System.out.print(node.data + " ");
+        preOrder(node.left);
+        preOrder(node.right);
     }
 
-    static void inOrder(Node uzel){
-        if(uzel==null) return;
-        inOrder(uzel.lev);
-        System.out.print(uzel.znach+" ");
-        inOrder(uzel.prav);
+    static void inOrder(Node node) {
+        if (node == null) return;
+        inOrder(node.left);
+        System.out.print(node.data + " ");
+        inOrder(node.right);
     }
 
-    static void postOrder(Node uzel){
-        if(uzel==null) return;
-        postOrder(uzel.lev);
-        postOrder(uzel.prav);
-        System.out.print(uzel.znach+" ");
+    static void postOrder(Node node) {
+        if (node == null) return;
+        postOrder(node.left);
+        postOrder(node.right);
+        System.out.print(node.data + " ");
     }
 
-    static void levelOrder(Node koren){
-        if(koren==null) return;
-        Queue<Node> q = new ArrayDeque<>();
-        q.add(koren);
-        while(!q.isEmpty()){
-            Node cur = q.poll();
-            System.out.print(cur.znach+" ");
-            if(cur.lev!=null) q.add(cur.lev);
-            if(cur.prav!=null) q.add(cur.prav);
+    static void levelOrder(Node root) {
+        if (root == null) return;
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            Node current = queue.poll();
+            System.out.print(current.data + " ");
+            if (current.left != null) queue.add(current.left);
+            if (current.right != null) queue.add(current.right);
         }
     }
 
-    static int height(Node uzel){
-        if(uzel==null) return 0;
-        return 1 + Math.max(height(uzel.lev), height(uzel.prav));
+    static int height(Node node) {
+        if (node == null) return 0;
+        return 1 + Math.max(height(node.left), height(node.right));
     }
 
-    static boolean isFull(Node uzel){
-        if(uzel==null) return true;
-        if((uzel.lev==null) ^ (uzel.prav==null)) return false;
-        return isFull(uzel.lev) && isFull(uzel.prav);
+    static boolean isFull(Node node) {
+        if (node == null) return true;
+        if ((node.left == null) ^ (node.right == null)) return false;
+        return isFull(node.left) && isFull(node.right);
     }
 
-    static Node buildFullTreeMinHeight3(){
-        Node a1=new Node(1), a2=new Node(2), a3=new Node(3), a4=new Node(4),
-             a5=new Node(5), a6=new Node(6), a7=new Node(7);
-        a1.lev=a2; a1.prav=a3;
-        a2.lev=a4; a2.prav=a5;
-        a3.lev=a6; a3.prav=a7;
-        return a1;
+    static Node buildFullTreeMinHeight3() {
+        Node n1 = new Node(1), n2 = new Node(2), n3 = new Node(3), n4 = new Node(4),
+             n5 = new Node(5), n6 = new Node(6), n7 = new Node(7);
+        n1.left = n2; n1.right = n3;
+        n2.left = n4; n2.right = n5;
+        n3.left = n6; n3.right = n7;
+        return n1;
     }
 
-    static Node insertBST(Node koren,int val){
-        if(koren==null) return new Node(val);
-        if(val<koren.znach) koren.lev = insertBST(koren.lev,val);
-        else koren.prav = insertBST(koren.prav,val);
-        return koren;
+    static Node insertBST(Node root, int value) {
+        if (root == null) return new Node(value);
+        if (value < root.data) root.left = insertBST(root.left, value);
+        else root.right = insertBST(root.right, value);
+        return root;
     }
 
-    static Node buildBSTFromSequence(int[] seq){
-        Node koren=null;
-        for(int v:seq) koren = insertBST(koren,v);
-        return koren;
+    static Node buildBSTFromSequence(int[] sequence) {
+        Node root = null;
+        for (int value : sequence) root = insertBST(root, value);
+        return root;
     }
 
-    static Node buildBalancedFromSorted(int[] a){
-        return buildBalancedRec(a,0,a.length-1);
+    static Node buildBalancedFromSorted(int[] array) {
+        return buildBalancedRec(array, 0, array.length - 1);
     }
 
-    static Node buildBalancedRec(int[] a,int l,int r){
-        if(l>r) return null;
-        int m=(l+r)/2;
-        Node uzel=new Node(a[m]);
-        uzel.lev = buildBalancedRec(a,l,m-1);
-        uzel.prav = buildBalancedRec(a,m+1,r);
-        return uzel;
+    static Node buildBalancedRec(int[] array, int left, int right) {
+        if (left > right) return null;
+        int mid = (left + right) / 2;
+        Node node = new Node(array[mid]);
+        node.left = buildBalancedRec(array, left, mid - 1);
+        node.right = buildBalancedRec(array, mid + 1, right);
+        return node;
     }
 
     static class LevelOrderTree {
-        Node koren;
+        Node root;
 
-        void insert(int val){
-            Node n=new Node(val);
-            if(koren==null){ koren=n; return; }
-            Queue<Node> q=new ArrayDeque<>();
-            q.add(koren);
-            while(!q.isEmpty()){
-                Node cur=q.poll();
-                if(cur.lev==null){ cur.lev=n; return; } else q.add(cur.lev);
-                if(cur.prav==null){ cur.prav=n; return; } else q.add(cur.prav);
+        void insert(int value) {
+            Node newNode = new Node(value);
+            if (root == null) { 
+                root = newNode; 
+                return; 
+            }
+            Queue<Node> queue = new LinkedList<>();
+            queue.add(root);
+            while (!queue.isEmpty()) {
+                Node current = queue.poll();
+                if (current.left == null) { 
+                    current.left = newNode; 
+                    return; 
+                } else {
+                    queue.add(current.left);
+                }
+                if (current.right == null) { 
+                    current.right = newNode; 
+                    return; 
+                } else {
+                    queue.add(current.right);
+                }
             }
         }
 
-        boolean delete(int key){
-            if(koren==null) return false;
-            if(koren.lev==null && koren.prav==null){
-                if(koren.znach==key){ koren=null; return true; }
+        boolean delete(int key) {
+            if (root == null) return false;
+            
+            if (root.left == null && root.right == null) {
+                if (root.data == key) {
+                    root = null;
+                    return true;
+                }
                 return false;
             }
-            Queue<Node> q=new ArrayDeque<>();
-            Map<Node,Node> parent=new IdentityHashMap<>();
-            q.add(koren); parent.put(koren,null);
-            Node target=null, last=null;
-            while(!q.isEmpty()){
-                Node cur=q.poll();
-                if(cur.znach==key) target=cur;
-                last=cur;
-                if(cur.lev!=null){ parent.put(cur.lev,cur); q.add(cur.lev); }
-                if(cur.prav!=null){ parent.put(cur.prav,cur); q.add(cur.prav); }
+
+            Queue<Node> queue = new LinkedList<>();
+            queue.add(root);
+            Node targetNode = null;
+            Node current = null;
+            
+            while (!queue.isEmpty()) {
+                current = queue.poll();
+                if (current.data == key) targetNode = current;
+                if (current.left != null) queue.add(current.left);
+                if (current.right != null) queue.add(current.right);
             }
-            if(target==null) return false;
-            Node lastParent = parent.get(last);
-            target.znach = last.znach;
-            if(lastParent==null) koren=null;
-            else {
-                if(lastParent.lev==last) lastParent.lev=null;
-                else if(lastParent.prav==last) lastParent.prav=null;
-            }
+
+            if (targetNode == null) return false;
+            
+            int deepestValue = current.data;
+            targetNode.data = deepestValue;
+            deleteDeepest(root, current);
             return true;
+        }
+
+        private void deleteDeepest(Node root, Node deepestNode) {
+            Queue<Node> queue = new LinkedList<>();
+            queue.add(root);
+            
+            while (!queue.isEmpty()) {
+                Node current = queue.poll();
+                
+                if (current.left != null) {
+                    if (current.left == deepestNode) {
+                        current.left = null;
+                        return;
+                    } else {
+                        queue.add(current.left);
+                    }
+                }
+                
+                if (current.right != null) {
+                    if (current.right == deepestNode) {
+                        current.right = null;
+                        return;
+                    } else {
+                        queue.add(current.right);
+                    }
+                }
+            }
         }
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Node full = buildFullTreeMinHeight3();
         System.out.print("preOrder: "); preOrder(full); System.out.println();
         System.out.print("inOrder: "); inOrder(full); System.out.println();
         System.out.print("postOrder: "); postOrder(full); System.out.println();
         System.out.print("levelOrder: "); levelOrder(full); System.out.println();
-        System.out.println("height: "+height(full));
-        System.out.println("isFull: "+isFull(full));
+        System.out.println("height: " + height(full));
+        System.out.println("isFull: " + isFull(full));
 
-        int[] seq = {8,3,10,1,6,14,4,7,13};
-        Node bst = buildBSTFromSequence(seq);
+        int[] sequence = {8, 3, 10, 1, 6, 14, 4, 7, 13};
+        Node bst = buildBSTFromSequence(sequence);
         System.out.print("BST inOrder: "); inOrder(bst); System.out.println();
         System.out.print("BST levelOrder: "); levelOrder(bst); System.out.println();
-        System.out.println("BST height: "+height(bst));
+        System.out.println("BST height: " + height(bst));
 
-        int[] sorted = {1,2,3,4,5,6,7,8,9};
-        Node bal = buildBalancedFromSorted(sorted);
-        System.out.print("balanced levelOrder: "); levelOrder(bal); System.out.println();
-        System.out.println("balanced height: "+height(bal));
-        System.out.println("balanced isFull: "+isFull(bal));
+        int[] sorted = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        Node balanced = buildBalancedFromSorted(sorted);
+        System.out.print("balanced levelOrder: "); levelOrder(balanced); System.out.println();
+        System.out.println("balanced height: " + height(balanced));
+        System.out.println("balanced isFull: " + isFull(balanced));
 
         LevelOrderTree lot = new LevelOrderTree();
-        int[] toInsert = {1,2,3,4,5,6,7,8};
-        for(int v:toInsert) lot.insert(v);
-        System.out.print("levelOrder after inserts: "); levelOrder(lot.koren); System.out.println();
-        System.out.println("delete 3: "+lot.delete(3));
-        System.out.print("levelOrder after delete: "); levelOrder(lot.koren); System.out.println();
-        System.out.println("delete 100: "+lot.delete(100));
+        int[] toInsert = {1, 2, 3, 4, 5, 6, 7, 8};
+        for (int value : toInsert) lot.insert(value);
+        System.out.print("levelOrder after inserts: "); levelOrder(lot.root); System.out.println();
+        System.out.println("delete 3: " + lot.delete(3));
+        System.out.print("levelOrder after delete: "); levelOrder(lot.root); System.out.println();
+        System.out.println("delete 100: " + lot.delete(100));
     }
 }
